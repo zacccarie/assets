@@ -10,15 +10,18 @@ dependencies = [
 
 [project.optional-dependencies]
 # Heavy / GPU dependencies are optional so the skeleton imports cleanly.
-ingest = ["av>=11.0", "decord>=0.6"]
+# decord is intentionally NOT included: no Apple-Silicon wheels. PyAV alone
+# is enough for the current ingestion path.
+ingest = ["av>=11.0"]
 encoders = ["torch>=2.1", "timm>=0.9"]
 geometry = ["scikit-learn>=1.3", "umap-learn>=0.5"]
 viz = ["matplotlib>=3.7"]
 all = [
-    "av>=11.0", "decord>=0.6",
+    "av>=11.0",
     "torch>=2.1", "timm>=0.9",
     "scikit-learn>=1.3", "umap-learn>=0.5",
     "matplotlib>=3.7",
+    "pillow>=10.0",
 ]
 
 [project.scripts]
