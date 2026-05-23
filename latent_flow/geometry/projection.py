@@ -41,6 +41,17 @@ def project(
         return reducer.fit_transform(z).astype(np.float32)
 
     if method == "tsne":
-        raise NotImplementedError("t-SNE is a Phase 2 feature")
+        try:
+            from sklearn.manifold import TSNE
+        except ImportError:
+            return _pca(z, n_components)
+        return TSNE(
+            n_components=n_components, init="pca",
+            perplexity=min(30, max(5, len(z) // 5)),
+        ).fit_transform(z).astype(np.float32)
+
+    if method == "diffusion":
+        from latent_flow.geometry.diffusion import diffusion_map
+        return diffusion_map(z, n_components=n_components)
 
     raise ValueError(f"unknown projection method '{method}'")

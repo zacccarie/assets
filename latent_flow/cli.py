@@ -29,6 +29,7 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
         target_frames=args.frames,
         max_side=args.max_side,
         projection=args.projection,
+        full=args.full,
     )
     v = result.video
     print(f"video: {v.source}")
@@ -42,6 +43,21 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
               f"m={enc.phase_space['dimension']}")
         print(f"  recurrence rate: {enc.recurrence_rate:.3f}")
         print(f"  determinism:     {enc.determinism:.3f}")
+        if enc.extras:
+            x = enc.extras
+            print(f"  lyapunov:         {x['lyapunov']:+.4f}  ({x['chaos_verdict']})")
+            print(f"  corr dimension:   {x['correlation_dimension']:.2f}")
+            print(f"  attractors:       {x['n_attractors']}  "
+                  f"(sep {x['attractor_separation']:.2f})")
+            print(f"  dominant period:  {x['dominant_period']:.2f} "
+                  f"(score {x['period_score']:.1f})")
+            ms = x["multiscale"]
+            print(f"  multi-scale:      disappears={ms['disappears']:.2f}  "
+                  f"persists={ms['persists']:.2f}  emerges={ms['emerges']:.3f}")
+            print(f"  regimes:          {x['regime_boundaries']}")
+            kp = x["koopman"]
+            print(f"  koopman rank {kp['rank']}  top freqs (Hz): "
+                  f"{[f'{f:.3f}' for f in kp['top_frequencies_hz']]}")
     return 0
 
 
@@ -65,8 +81,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--frames", type=int, default=256, help="target sampled frames")
     p.add_argument("--max-side", type=int, default=512, help="max frame side (px)")
     p.add_argument(
-        "--projection", default="umap", choices=["umap", "pca"],
+        "--projection", default="umap",
+        choices=["umap", "pca", "tsne", "diffusion"],
         help="latent projection method",
+    )
+    p.add_argument(
+        "--full", action="store_true",
+        help="run extended analysis: Lyapunov, D2, multiscale, causal, Koopman",
     )
     p.set_defaults(func=_cmd_analyze)
 

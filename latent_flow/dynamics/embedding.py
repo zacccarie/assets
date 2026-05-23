@@ -11,7 +11,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def _observable(z: np.ndarray) -> np.ndarray:
+def principal_component(z: np.ndarray) -> np.ndarray:
     """Reduce a (T, d) trajectory to a scalar series: the leading PC."""
     if z.ndim == 1:
         return z.astype(np.float64)
@@ -83,7 +83,7 @@ def delay_embedding(series: np.ndarray, m: int, tau: int) -> np.ndarray:
 
 def reconstruct(z: np.ndarray) -> dict:
     """Full phase-space reconstruction from a latent trajectory."""
-    s = _observable(z)
+    s = principal_component(z)
     tau = estimate_delay(s)
     m = estimate_dimension(s, tau)
     return {

@@ -10,7 +10,9 @@ from latent_flow.encoders.base import Encoder
 ENCODERS: Registry[Encoder] = Registry("encoder")
 
 # Import side-effect: register the built-in encoders.
-from latent_flow.encoders import cnn, vit  # noqa: E402,F401
+from latent_flow.encoders import (  # noqa: E402,F401
+    ae_baseline, cnn, contrastive, stubs, temporal, vit,
+)
 
 
 def build(name: str, **kwargs) -> Encoder:
